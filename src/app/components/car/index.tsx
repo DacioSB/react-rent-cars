@@ -13,9 +13,9 @@ import { Button } from "../button";
 interface ICarProps extends ICar {}
 
 const CarContainer = styled.div`
-    width: 16.5em;
-    min-width: 23em;
-    max-height: 23em;
+    width: 14.5em;
+    min-width: 20em;
+    max-height: 20em;
     box-shadow: 0 1.3px 17px -2px rgba(0, 0, 0, 0.4);
     ${tw`
     flex
@@ -129,7 +129,7 @@ const Separator = styled.div`
 const RentButton = styled(Button)`
     ${tw`
         min-w-full
-        mt-5
+        mt-1
         `
     };
 `;
