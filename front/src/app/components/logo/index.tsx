@@ -2,6 +2,12 @@ import React from "react";
 import styled from "styled-components";
 import tw from "twin.macro";
 import logo from "../../../assets/RentCar-logos_transparent.png";
+import logoblack from "../../../assets/RentCar-logos_black.png";
+
+interface ILogoProps {
+    color?: "white" | "dark";
+    bgColor?: "white" | "dark";
+}
 
 const LogoContainer = styled.div`
     ${tw`
@@ -18,7 +24,8 @@ const LogoText = styled.div`
         text-main_blue
         m-1
     `}
-`;
+    ${({ color }: any) => (color === "white" ? tw`text-white` : tw`text-black`)}
+` as any;
 
 const LogoImage = styled.div`
     width: auto;
@@ -32,13 +39,14 @@ const LogoImage = styled.div`
     }
 `;
 
-export function Logo() {
+export function Logo(props: ILogoProps) {
+    const { color, bgColor } = props;
     return (
         <LogoContainer>
             <LogoImage>
-                <img src={logo} alt="logo" />
+                <img src={bgColor === "dark" ? logoblack : logo} alt="logo" />
             </LogoImage>
-            <LogoText>Yourcar.</LogoText>
+            <LogoText color={color || "dark"}>Yourcar.</LogoText>
         </LogoContainer>
     );
 }

@@ -7,9 +7,14 @@ import Carousel, { Dots, slidesToShowPlugin } from "@brainhubeu/react-carousel";
 import "@brainhubeu/react-carousel/lib/style.css";
 import { useMediaQuery } from "react-responsive";
 import { SCREENS } from "../../components/responsive";
-import { Dispatch } from "redux";
 import { useDispatch, useSelector } from "react-redux";
 import { createSelector } from "reselect";
+import carService from "../../services/carService";
+import { GetCars_cars } from "../../services/carService/__generated__/GetCars";
+import { setTopCars } from "./homepageSlice";
+import { Dispatch } from "@reduxjs/toolkit";
+import { makeSelectTopCars } from "./selectors";
+import MoonLoader from "react-spinners/MoonLoader";
 
 const TopCarsContainer = styled.div`
     ${tw`
@@ -69,53 +74,64 @@ const LoadingContainer = styled.div`
     text-black
   `};
 `;
+
+const actionDispatch = (dispatch: Dispatch) => ({
+  setTopCars: (cars: GetCars_cars[]) => dispatch(setTopCars(cars)),
+});
+
+const stateSelector = createSelector(makeSelectTopCars, (topCars) => ({
+  topCars,
+}));
+
 export function TopCars() {
   const [current, setCurrent] = useState(0);
-  const testCar: ICar = {
-    name: "Corolla",
-    mileage: "20,000",
-    thumbnailSrc:
-      "https://github.com/DacioSB/rent-cars/blob/main/src/assets/CORO-removebg-preview.png?raw=true",
-    dailyPrice: 70,
-    monthlyPrice: 2000,
-    gearType: "Auto",
-    gas: "Petrol",
+  const { topCars } = useSelector(stateSelector);
+  const { setTopCars } = actionDispatch(useDispatch());
+  const [isLoading, setLoading] = useState(false);
+
+  const fetchTopCars = async () => {
+    setLoading(true);
+    const cars = await carService.getCars().catch((err) => {
+      console.log("Error: ", err);
+    });
+    console.log("Cars: ", cars);
+    if (cars) setTopCars(cars);
+    setLoading(false);
   };
 
-  const testCar2: ICar = {
-    name: "Virtus",
-    mileage: "36,000",
-    thumbnailSrc:
-      "https://github.com/DacioSB/rent-cars/blob/main/src/assets/VIRF-removebg-preview.png?raw=true",
-    dailyPrice: 50,
-    monthlyPrice: 1300,
-    gearType: "Manual",
-    gas: "Petrol",
-  };
-  const testCar3: ICar = {
-    name: "Chronos",
-    mileage: "35,000",
-    thumbnailSrc:
-      "https://github.com/DacioSB/rent-cars/blob/main/src/assets/CROX-removebg-preview.png?raw=true",
-    dailyPrice: 55,
-    monthlyPrice: 1500,
-    gearType: "Manual",
-    gas: "Petrol",
-  };
+  useEffect(() => {
+    fetchTopCars();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
-  const cars = [testCar, testCar2, testCar3, testCar2];
-  const carsReact = (cars.map((car) => <Car {...car} thumbnailSrc={car.thumbnailSrc} />));
+  const isEmptyTopCars = !topCars || topCars.length === 0;
+
+  const cars =
+    (!isEmptyTopCars &&
+      topCars.map((car) => <Car {...car} thumbnailSrc={car.thumbnailUrl} />)) ||
+    [];
   const isMobile = useMediaQuery({ maxWidth: SCREENS.sm });
-  const numberOfDots = isMobile ? carsReact.length : Math.ceil(carsReact.length / 3);
+  const numberOfDots = isMobile ? cars.length : Math.ceil(cars.length / 3);
+
+  if (isEmptyTopCars) {
+    return null;
+  }
 
   return (
     <TopCarsContainer>
       <Title>Explore Our Top Deals</Title>
+      {isLoading && (
+        <LoadingContainer>
+          <MoonLoader loading size={20} />
+        </LoadingContainer>
+      )}
+      {isEmptyTopCars && !isLoading && <EmptyCars>No Cars To Show!</EmptyCars>}
+      {!isEmptyTopCars && !isLoading && (
         <CarsContainer>
           <Carousel
             value={current}
             onChange={setCurrent}
-            slides={carsReact}
+            slides={cars}
             plugins={[
               "clickToChange",
               {
@@ -149,7 +165,7 @@ export function TopCars() {
             }}
           />
           <Dots value={current} onChange={setCurrent} number={numberOfDots} />
-        </CarsContainer>
+        </CarsContainer>)}
     </TopCarsContainer>
-    );
+  );
 }
