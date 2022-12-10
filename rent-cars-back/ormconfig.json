@@ -1,6 +1,6 @@
 [
   {
-    "name": "dev",
+    "name": "prod",
     "type": "sqlite",
     "database": "./src/database/database.sqlite",
     "entities": ["dist/**/entities/*{.ts,.js}"],
@@ -11,7 +11,7 @@
     }
   },
   {
-    "name": "prod",
+    "name": "dev",
     "type": "mysql",
     "host": "mysqldb",
     "port": 3306,
