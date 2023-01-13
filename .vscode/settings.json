@@ -1,0 +1,8 @@
+{
+    "appService.zipIgnorePattern": [
+        "node_modules{,/**}",
+        ".vscode{,/**}"
+    ],
+    "appService.defaultWebAppToDeploy": "/subscriptions/0dfe3746-5242-4130-b328-ce9a8258cdd1/AppServices/subscriptions/0dfe3746-5242-4130-b328-ce9a8258cdd1/resourceGroups/RentCars/providers/Microsoft.Web/sites/rent-cars-back",
+    "appService.deploySubpath": "rent-cars-back"
+}

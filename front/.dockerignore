@@ -1,0 +1,7 @@
+#not include build and node_modules folders
+
+#not include .env file
+
+node_modules
+build
+.env
